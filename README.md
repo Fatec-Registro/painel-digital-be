@@ -1,4 +1,4 @@
-# 📦 Arquitetura Backend - Paineis Digitais
+# 📦 Arquitetura Backend - Painel Digital
 
 ## 🏗️ Arquitetura Utilizada
 
