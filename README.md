@@ -16,7 +16,7 @@ Cada módulo é responsável por uma funcionalidade específica do sistema, cont
 ---
 
 ## 📂 Estrutura de Pastas
-
+```
 backend-painel/
 ├── src/
 │ ├── config/ 
@@ -30,7 +30,7 @@ backend-painel/
 │ │         ├── painelController.js 
 │ │         └── painelRoutes.js 
 │ └── index.js 
-
+```
 ---
 
 ## 🧠 Descrição dos Diretórios e Arquivos
