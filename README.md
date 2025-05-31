@@ -86,3 +86,19 @@ npm run dev
 
 - Mantenha o padrão de desenvolvimento e a arquitetura definida para garantir a escalabilidade e a manutenibilidade do projeto.
 - Dúvidas sobre a arquitetura? Consulte o arquivo 👉 [ARCHITECTURE.md](ARCHITECTURE.md).
+
+
+
+## 📌 **Atenção:**
+
+Na pasta `src/modules` há um módulo chamado `example`. Este módulo serve **exclusivamente como modelo** de como estruturar novos módulos no projeto. 
+
+Nele, você encontra o padrão de organização dos arquivos, incluindo:
+- Controller
+- Service
+- Module
+- Routes
+- DTO
+
+Esse módulo não faz parte da aplicação em produção. Ao criar um novo módulo, copie a estrutura do `example` e adapte conforme a necessidade da sua funcionalidade.
+
