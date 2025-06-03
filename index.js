@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./src/config/database.js"
 import exampleRoutes from "./src/modules/example/exampleRoutes.js";
+import userRoutes from "./src/modules/user/userRoutes.js";
 
 const app = express();
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Rotas
 app.use("/", exampleRoutes);
+app.use("/", userRoutes);
 
 const PORT = process.env.PORT;
 

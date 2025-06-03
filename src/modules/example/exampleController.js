@@ -1,7 +1,7 @@
 import exampleService from "./exampleService.js";
 import { createExampleSchema, updateExampleSchema } from "./exampleDTO.js";
 import { ObjectId } from "mongodb";
-import { ZodError } from "zod/v4";
+import { ZodError } from "zod";
 
 const getAllExample = async(req, res) => {
     try{
@@ -44,19 +44,21 @@ const deleteExample = async(req, res) => {
 
 const updateExample = async(req, res) => {
     try{
-        if(ObjectId.isValid(req.params.id)){
-            const id = req.params.id;
-            const parsedData = updateExampleSchema.parse(req.body);
-            const example = await exampleService.update(id, parsedData);
-            res.status(200).json({ example }); // Cód. 200 (OK)
-        } else {
-            res.status(400).json({error: "Bad Request"}); // Cód. 400 (Bad Request)
+        const { id } = req.params;
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Bad Request" }); // Cód. 400 (Bad Request)
         }
+        const example = await exampleService.update(id, req.body);
+        if (!example) {
+            return res.status(404).json({ error: "Not Found" });  // Cód. 404 (Not Found)
+        }
+        return res.status(200).json({ example }); // Cód. 200 (OK)
     } catch (error){
-        if(error.errors){
-            return res.status(400).json({ error:error.errors }); // Cód. 400 (Bad Request)
+        console.log(error);
+        if (error.name === "ZodError") {
+            return res.status(400).json({ error: error.errors });  // Cód. 404 (Not Found)
         }
-        res.status(500).json({error: "Internal Server Error"}); // Cód. 500 (Internal Server Error)
+        return res.status(500).json({ error: "Internal Server Error" });  // Cód. 500 (Internal Server Error)
     }
 };
 

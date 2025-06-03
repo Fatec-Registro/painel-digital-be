@@ -1,4 +1,4 @@
-import { createUserSchema, updateUserSchema } from './userDTO';
+import { createUserSchema, updateUserSchema } from './userDTO.js';
 import User from './userModel.js';
 import bcrypt from "bcrypt";
 

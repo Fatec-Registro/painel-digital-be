@@ -53,7 +53,7 @@ class exampleService {
             return updateExample;
         } catch (error) {
             console.log(error);
-            throw new Error("Erro na atualização dos dados de exemplo: " + error.message);
+            throw error;
         }
     }
     // Método para Listar um único Exemplo

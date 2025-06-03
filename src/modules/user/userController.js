@@ -2,7 +2,8 @@ import { createUserSchema, updateUserSchema } from "./userDTO.js";
 import userService from "./userService.js";
 import { ObjectId } from "mongodb";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import { ZodError } from "zod";
 
 const JWTSecret = 'apipainelsecret';
 
@@ -24,8 +25,8 @@ const createUser = async (req, res) => {
         res.sendStatus(201);
     } catch (error) {
         console.log(error);
-        if (error.errors) {
-            return res.status(400).json({ error:error.errors });
+        if (error instanceof ZodError) {
+            return res.status(400).json({ error: error.errors });
         }
         if (error.code === 11000 &&  error.keyPattern?.email){
             return res.status(400).json({error:"Email já cadastrado."});
@@ -39,31 +40,34 @@ const deleteUser = async (req, res) => {
         if(ObjectId.isValid(req.params.id)){
             const id = req.params.id;
             await userService.delete(id);
-            res.sendStatus(204);
+            res.sendStatus(204) // Cód. 204 (No Content)
         } else {
-            res.sendStatus(400);
+            res.status(400).json({ error: "Bad Request"}) // Cód. 400 (Bad Request)
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error:"Erro interno do servidor." });
+        res.status(500).json({error: "Internal Server Error"}); // Cód. 500 (Internal Server Error)
     }
 };
 
 const updateUser = async (req, res) => {
     try{
-        if(ObjectId.isValid(req.params.id)){
-            const id = req.params.id;
-            const parsedData = updateUserSchema.parse(req.body);
-            const user = await userService.update(id, parsedData);
-            res.status(200).json({ user });
-        } else {
-            res.sendStatus(400);
+        const { id } = req.params;
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Bad Request" }); // Cód. 400 (Bad Request)
         }
+        const validatedData = updateUserSchema.parse(req.body);
+        const user = await userService.update(id, validatedData);
+        if (!user) {
+            return res.status(404).json({ error: "Not Found" });  // Cód. 404 (Not Found)
+        }
+        return res.status(200).json({ user }); // Cód. 200 (OK)
     } catch (error) {
-        if (error.errors) {
-            return res.status(400).json({ error:error.errors });
+        console.log(error);
+        if (error.name === "ZodError") {
+            return res.status(400).json({ error: error.errors });  // Cód. 404 (Not Found)
         }
-        res.sendStatus(500);
+        return res.status(500).json({ error: "Internal Server Error" });  // Cód. 500 (Internal Server Error)
     }
 };
 

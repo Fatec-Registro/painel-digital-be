@@ -13,7 +13,7 @@ exampleRoutes.post("/example", exampleController.createExample);
 exampleRoutes.delete("/example/:id", exampleController.deleteExample);
 
 //Endpoint: Atualizar um Exemplo
-exampleRoutes.put("/example/:id", exampleController.updateExample);
+exampleRoutes.patch("/example/:id", exampleController.updateExample);
 
 //Endpoint: Listar um exemplo especifico
 exampleRoutes.get("/example/:id", exampleController.getOneExample);
