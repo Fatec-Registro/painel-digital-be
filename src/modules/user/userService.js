@@ -16,6 +16,10 @@ class userService {
     async create(data){
         try{
             const validatedData = createUserSchema.parse(data);
+            const existingUser = await User.findOne({ email: validatedData.email });
+            if (existingUser) {
+                throw { code: 11000, keyPattern: { email: true } };
+            }
             const hashedPassword = await bcrypt.hash(validatedData.password, 10); //Gera Hash de Senha
             validatedData.password = hashedPassword; // Substitui a senha pelo hash criado
             const newUser = new User(validatedData);
