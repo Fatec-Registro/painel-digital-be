@@ -11,7 +11,7 @@ const addressSchema = new mongoose.Schema({
 //Documento
 const exampleSchema = new mongoose.Schema({
     name: String,
-    year: Number,
+    age: Number,
     typeUser: String,
     address: [addressSchema],
     dateOfBirth: Date

@@ -11,7 +11,7 @@ const addressSchema = z.object({
 // Utilizado para a validação da criação de algum Doc.
 export const createExampleSchema = z.object({
     name: z.string(),
-    year: z.number(),
+    age: z.number(),
     typeUser: z.enum(['Solicitante', 'Design', 'Suporte']),
     address: z.array(addressSchema),
     dateOfBirth: z.coerce.date()
@@ -20,7 +20,7 @@ export const createExampleSchema = z.object({
 // Utilizado para a atualização validação de algum Doc.
 export const updateExampleSchema = z.object({
     name: z.string().optional(),
-    year: z.number().optional(),
+    age: z.number().optional(),
     typeUser: z.enum(['Solicitante', 'Design', 'Suporte']).optional(),
     address: z.array(addressSchema).optional(),
     dateOfBirth: z.coerce.date().optional()
