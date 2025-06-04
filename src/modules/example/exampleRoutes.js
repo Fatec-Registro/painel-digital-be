@@ -60,6 +60,8 @@ exampleRoutes.get("/examples",  Auth.Authorization, exampleController.getAllExam
  *                                          district:
  *                                              type: string
  *                                              example: "Centro"
+ *       401:
+ *          description: invalid Token
  *       500:
  *          description: Internal Server Error
  */
@@ -147,6 +149,8 @@ exampleRoutes.post("/example", Auth.Authorization, exampleController.createExamp
  *                                          district:
  *                                              type: string
  *                                              example: "Centro"
+ *       401:
+ *          description: invalid Token
  *       400:
  *          description: Requisição inválida - erro de validação
  *       500:
@@ -177,6 +181,8 @@ exampleRoutes.delete("/example/:id", Auth.Authorization, exampleController.delet
  *          description: No content
  *       400:
  *          description: Bad Request
+ *       401:
+ *          description: invalid Token
  *       500:
  *          description: Internal Server Error
  */
@@ -274,6 +280,8 @@ exampleRoutes.patch("/example/:id", Auth.Authorization, exampleController.update
  *          description: Not Found
  *       400:
  *          description: Invalid ID format or Requisição inválida - erro de validação
+ *       401:
+ *          description: invalid Token
  *       500:
  *          description: Internal Server Error
  */
@@ -336,6 +344,8 @@ exampleRoutes.get("/example/:id", Auth.Authorization, exampleController.getOneEx
  *                                          example: "Centro"
  *       404:
  *          description: Not Found
+ *       401:
+ *          description: invalid Token
  *       400:
  *          description: Bad Request
  *       500:
