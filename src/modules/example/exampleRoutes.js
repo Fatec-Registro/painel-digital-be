@@ -8,7 +8,7 @@ const exampleRoutes = express.Router();
  * @swagger
  * tags:
  *  name: Example
- *  description: Operações relacionadas a exemplos
+ *  description: Operações relacionadas a Example
  */
 
 // Endpoint: Consulta de todos os Exemplos

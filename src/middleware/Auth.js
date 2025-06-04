@@ -10,7 +10,7 @@ const Authorization = (req, res, next) => {
         jwt.verify(token, userController.JWTSecret,(err,data) => {
             if(err){
                 res.status(401)
-                res.json({err:"Token inválido!"})
+                res.json({err:"invalid Token!"})
             }else{
                 req.token = token
                 req.loggedUser = {
@@ -22,7 +22,7 @@ const Authorization = (req, res, next) => {
         })
     }else{
         res.status(401)
-        res.json({err:"Token inválido"})
+        res.json({err:"invalid Token"})
     }
 }
 export default { Authorization }
