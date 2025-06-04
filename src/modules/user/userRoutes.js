@@ -217,7 +217,7 @@ userRoutes.get("/user/:email", Auth.Authorization, userController.getOneUser);
  */
 
 
-// Sessão destinada ao login
+                // Sessão destinada ao login
 /**
  * @swagger
  * tags:
