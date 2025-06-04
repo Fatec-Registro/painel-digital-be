@@ -46,7 +46,7 @@ const updateExample = async(req, res) => {
     try{
         const { id } = req.params;
         if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ error: "Bad Request" }); // Cód. 400 (Bad Request)
+            return res.status(400).json({ error: "Invalid ID format" }); // Cód. 400 (Bad Request)
         }
         const example = await exampleService.update(id, req.body);
         if (!example) {
