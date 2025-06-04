@@ -29,6 +29,7 @@ backend-painel/
 │ │         ├── painelService.js 
 │ │         ├── painelController.js 
 │ │         └── painelRoutes.js 
+| ├── app.js
 │ └── index.js 
 ```
 ---
@@ -50,7 +51,10 @@ backend-painel/
   - **painelRoutes.js**: Define as rotas HTTP disponíveis para o módulo.
 
 - **index.js**  
-  Arquivo principal que inicializa o servidor, configura middlewares globais, conecta ao banco de dados e carrega as rotas dos módulos.
+  Arquivo principal que inicializa o servidor e conecta ao banco de dados.
+
+- **app.js**  
+  Arquivo de configuração middlewares globais e carrega as rotas dos módulos.
 
 ---
 
@@ -59,4 +63,7 @@ backend-painel/
 - Node.js
 - Express.js
 - Banco de Dados: MongoDB
-- Outras bibliotecas auxiliares conforme necessidade (validação, autenticação, logs, etc.)
+- JSON Web Token
+- Bcrypt Password-Hashing Function
+- Swagger
+
