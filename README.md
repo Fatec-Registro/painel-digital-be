@@ -10,6 +10,9 @@ Este documento descreve como configurar o ambiente de desenvolvimento, instalar 
 [![Express](https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=fff)](https://expressjs.com/)  
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=fff)](https://www.mongodb.com/)  
 [![Zod](https://img.shields.io/badge/Zod-000000?logo=zod&logoColor=white)](https://zod.dev/)  
+[![JWT](https://img.shields.io/badge/JSON%20Web%20Token-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)  
+[![Bcrypt](https://img.shields.io/badge/Bcrypt-00599C?logo=key&logoColor=white)](https://github.com/kelektiv/node.bcrypt.js)  
+[![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=black)](https://swagger.io/)
 
 ---
 
@@ -48,6 +51,14 @@ npm run dev
 ### ✅ Validação de Dados
 
 - Utilize **Zod** para validar os dados nas operações de criação e atualização de documentos. Isso garante a consistência dos dados e evita registros inválidos no banco.
+
+### 🔐 Autenticação e Segurança
+- A autenticação dos usuários é realizada por meio de JWT (JSON Web Token), que gera um token de acesso após o login bem-sucedido. Esse token é utilizado nas requisições para acessar rotas protegidas, garantindo a segurança e o controle de acesso à API.
+
+- As senhas dos usuários são armazenadas de forma segura utilizando Bcrypt, uma biblioteca de hashing que aplica algoritmos de criptografia, garantindo que as senhas estejam protegidas, mesmo em caso de vazamento de dados.
+
+### 📄 Documentação da API
+- A API é documentada utilizando o Swagger, que permite a geração de uma interface interativa e de fácil acesso para explorar todos os endpoints disponíveis. A documentação detalha os métodos, parâmetros, estruturas de requisição e resposta, facilitando o entendimento e a integração com outros desenvolvedores e sistemas.
 
 ---
 
