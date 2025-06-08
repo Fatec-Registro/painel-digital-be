@@ -1,4 +1,4 @@
-import userController from "../modules/user/userController.js";
+import authController from "../modules/auth/authController.js";
 import jwt from 'jsonwebtoken';
 
 
@@ -7,7 +7,7 @@ const Authorization = (req, res, next) => {
     if(authToken != undefined){
         const bearer = authToken.split(' ');
         var token = bearer[1]
-        jwt.verify(token, userController.JWTSecret,(err,data) => {
+        jwt.verify(token, authController.JWTSecret,(err,data) => {
             if(err){
                 res.status(401)
                 res.json({err:"invalid Token!"})
