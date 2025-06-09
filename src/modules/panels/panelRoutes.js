@@ -1,6 +1,6 @@
 import express from "express";
 import panelController from "./panelController.js";
-// import Auth from "../../middleware/Auth.js"; descomentar quando for implementar autenticação
+// import Auth from "../../middleware/Auth.js"; // descomentar quando for implementar autenticação
 
 const panelRoutes = express.Router();
 
@@ -9,6 +9,62 @@ const panelRoutes = express.Router();
  * tags:
  *   - name: Panels
  *     description: Operações relacionadas a Painéis
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Panel:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "665fd6e8c5e1f2d7f74a1b5a"
+ *         nome:
+ *           type: string
+ *           example: "Painel A"
+ *         localizacao:
+ *           type: string
+ *           example: "Bloco 1 - Andar 2"
+ *         descricao:
+ *           type: string
+ *           example: "Painel localizado na entrada principal."
+ *         resolucao:
+ *           type: string
+ *           example: "1920x1080"
+ *         ip_maquina:
+ *           type: string
+ *           example: "192.168.0.12"
+ *         status:
+ *           type: string
+ *           enum: [ativo, inativo, manutencao]
+ *           example: "ativo"
+ *         isSmartTV:
+ *           type: boolean
+ *           example: true
+ *         temCaboRede:
+ *           type: boolean
+ *           example: false
+ *         quantasEntradasHDMI:
+ *           type: number
+ *           example: 2
+ *         marcaTV:
+ *           type: string
+ *           example: "Samsung"
+ *         anunciosAtivos:
+ *           type: array
+ *           items:
+ *             type: string
+ *             example: "665fd6e8c5e1f2d7f74a1b8b"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-06-08T12:34:56.000Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2025-06-08T13:00:00.000Z"
  */
 
 /**
@@ -25,12 +81,9 @@ const panelRoutes = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 panels:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Panel'
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Panel'
  *       500:
  *         description: Internal Server Error
  */
@@ -56,6 +109,10 @@ panelRoutes.get(
  *     responses:
  *       201:
  *         description: Painel criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Panel'
  *       400:
  *         description: Requisição inválida - erro de validação Zod
  *       500:
@@ -85,6 +142,10 @@ panelRoutes.post(
  *     responses:
  *       200:
  *         description: Painel retornado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Panel'
  *       400:
  *         description: Formato de ID inválido
  *       404:
@@ -135,6 +196,10 @@ panelRoutes.post(
  *     responses:
  *       200:
  *         description: Atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Panel'
  *       400:
  *         description: Formato de ID inválido ou erro de validação
  *       404:
