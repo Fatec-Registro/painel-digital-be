@@ -1,22 +1,63 @@
 import Panel from './panelModel.js';
+import { createPanelSchema, updatePanelSchema } from './panelDTO.js';
 
-export const createPanel = async (panelData) => {
-  const newPanel = new Panel(panelData);
-  return await newPanel.save();
-};
+class panelService {
+    async getAll(){
+        try {
+            return await Panel.find();
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-export const getAllPanels = async () => {
-  return await Panel.find();
-};
+    async getOne(id){
+        try {
+            return await Panel.findOne({ _id: id });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    async create(data){
+        try {
+            const validatedData = createPanelSchema.parse(data);
+            const newPanel = new Panel(validatedData);
+            await newPanel.save();
+            return newPanel;
+        } catch (error) {
+            console.log(error);
+            throw new Error("Erro na criação de um novo Painel: " + error.message);
+        }
+    }
 
-export const getPanelById = async (id) => {
-  return await Panel.findById(id);
-};
+    async update(id, data){
+        try {
+            const validatedData = updatePanelSchema.parse(data);
+            const updatedPanel = await Panel.findByIdAndUpdate(id, validatedData, { new: true });
 
-export const updatePanel = async (id, updateData) => {
-  return await Panel.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
-};
+            if (!updatedPanel){
+                console.log(`Nenhum painel com o ID: ${id} foi encontrado para a atualização.`);
+                return null;
+            }
+            return updatedPanel;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 
-export const deletePanel = async (id) => {
-  return await Panel.findByIdAndDelete(id);
-};
+    async delete(id){
+        try {
+            const panel = await Panel.findByIdAndDelete(id);
+            if(!panel){
+                console.log(`Nenhum Painel com o ID: ${id} foi encontrado.`);
+                return;
+            }
+            return panel;
+        } catch(error) {
+            console.log(error);
+        }
+    }
+}
+
+export default new panelService();
