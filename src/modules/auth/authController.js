@@ -16,15 +16,12 @@ const loginUser = async (req, res) => {
         if (!user) return res.status(404).json({ err: "E-mail not found." });
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) return res.status(401).json({ err: "Credenciais invalid!" });
+        if (!isPasswordValid) return res.status(401).json({ err: "Credential invalid!" });
 
-        // Gera Access Token (curto)
         const accessToken = jwt.sign({ id: user._id, email: user.email }, JWTSecret, { expiresIn: '15m' });
 
-        // Gera Refresh Token (longo)
         const refreshToken = jwt.sign({ id: user._id, email: user.email }, JWTRefreshSecret, { expiresIn: '7d' });
 
-        // Define cookie com refresh token 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -39,26 +36,39 @@ const loginUser = async (req, res) => {
     }
 };
 
-// Refresh Token - gera novo access token
 const refreshToken = (req, res) => {
-    const token = req.cookies.refreshToken;
-    if (!token) return res.status(401).json({ err: "Refresh token not found" });
+    try {
+        const token = req.cookies.refreshToken;
+        if (!token) {
+            return res.status(401).json({ err: "Refresh token not found" });
+        }
 
-    jwt.verify(token, JWTRefreshSecret, (err, data) => {
-        if (err) return res.status(403).json({ err: "Refresh token invalid" });
+        jwt.verify(token, JWTRefreshSecret, (err, data) => {
+            if (err) {
+                return res.status(403).json({ err: "Refresh token invalid." });
+            }
 
-        const newAccessToken = jwt.sign({ id: data.id, email: data.email }, JWTSecret, { expiresIn: '15m' });
-        return res.json({ accessToken: newAccessToken });
-    });
+            const newAccessToken = jwt.sign(
+                { id: data.id, email: data.email },
+                JWTSecret,
+                { expiresIn: '15m' }
+            );
+
+            return res.status(200).json({ accessToken: newAccessToken });
+        });
+    } catch (error) {
+        console.error("Erro no refresh token:", error);
+        return res.status(500).json({ err: "Internal Server Error" });
+    }
 };
 
-// Perfil do usuário logado
+
 const me = async (req, res) => {
     try {
         const user = await User.findById(req.loggedUser.id);
         if (!user) return res.status(404).json({ err: "User not Found" });
         // Colocar as informações que devem ser retornadas
-        return res.json({
+        return res.status(200).json({
             id: user._id,
             email: user.email,
         });

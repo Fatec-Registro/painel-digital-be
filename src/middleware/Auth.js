@@ -3,7 +3,7 @@ import authController from "../modules/auth/authController.js";
 
 const Authorization = (req, res, next) => {
     const authToken = req.headers['authorization'];
-    if (!authToken) return res.status(401).json({ err: "Token não fornecido" });
+    if (!authToken) return res.status(401).json({ err: "Token not provided" });
 
     const parts = authToken.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
@@ -12,7 +12,7 @@ const Authorization = (req, res, next) => {
 
     const token = parts[1];
     jwt.verify(token, authController.JWTSecret, (err, data) => {
-        if (err) return res.status(401).json({ err: "Token inválido ou expirado" });
+        if (err) return res.status(401).json({ err: "Token invalid or expired" });
 
         req.token = token;
         req.loggedUser = {
