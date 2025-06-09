@@ -1,7 +1,8 @@
 import Panel from './panelModel.js';
-import { createPanelSchema, updatePanelSchema } from './panelDTO.js';
+import { updatePanelSchema } from './panelDTO.js';
 
 class panelService {
+
     async getAll(){
         try {
             return await Panel.find();
@@ -17,10 +18,9 @@ class panelService {
             console.log(error);
         }
     }
-    
-    async create(data){
+
+    async create(validatedData){
         try {
-            const validatedData = createPanelSchema.parse(data);
             const newPanel = new Panel(validatedData);
             await newPanel.save();
             return newPanel;
@@ -51,7 +51,7 @@ class panelService {
             const panel = await Panel.findByIdAndDelete(id);
             if(!panel){
                 console.log(`Nenhum Painel com o ID: ${id} foi encontrado.`);
-                return;
+                return null;
             }
             return panel;
         } catch(error) {
