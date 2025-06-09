@@ -12,10 +12,10 @@ const authRoutes = express.Router();
  */
 
 // Endpoint para Login do Usuário
-authRoutes.post("/auth", authController.loginUser);
+authRoutes.post("/auth/login", authController.loginUser);
 /**
  * @swagger
- * /auth:
+ * /auth/login:
  *   post:
  *     summary: Realiza a autenticação do usuário
  *     tags: [Auth]
@@ -56,5 +56,9 @@ authRoutes.post("/auth", authController.loginUser);
  *       500:
  *         description: Erro interno no servidor
  */
+
+authRoutes.post('/auth/refresh', authController.refreshToken);
+authRoutes.get('/auth/me', Auth.Authorization, authController.me);
+
 
 export default authRoutes;

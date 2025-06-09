@@ -1,49 +1,75 @@
 import userService from "../user/userService.js";
+import User from '../user/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const JWTSecret = 'apipainelsecret';
+const JWTRefreshSecret = 'apipainelrefreshsecret'; 
 
-// Função para Login do Usuário
+// Login do usuário - com access e refresh tokens
 const loginUser = async (req, res) => {
     try {
-        const {email, password} = req.body
-        // E-mail válido
-        if(email != undefined){
-            const user = await userService.getOne(email)
-                // Usuário encontrado
-                if(user != undefined){
-                    // Senha correta
-                    const isPasswordValid = await bcrypt.compare(password, user.password);
-                    if(isPasswordValid){
-                        jwt.sign({id: user._id, email: user.email}, JWTSecret, {expiresIn:'24h'}, (err, token) => {
-                            if(err){
-                                res.status(400) // Bad request
-                                res.json({err: "Falha interna"})
-                            }else{
-                                res.status(200) // OK
-                                res.json({token: token})
-                            }
-                        })
-                    // Senha incorreta
-                    }else{
-                        res.status(401) // Unauthorized
-                        res.json({err: "Credenciais inválidas!"})
-                    }
-                // Usuário não encontrado
-                }else{
-                    res.status(404) // Not Found
-                    res.json({err: "O e-mail enviado não foi encontrado."})
-                }
-        // E-mail inválido
-        }else{
-            res.status(400) // Bad request
-            res.json({err: "O e-mail enviado é inválido."})
-        }  
+        const { email, password } = req.body;
+        if (!email) return res.status(400).json({ err: "E-mail invalid" });
+
+        const user = await userService.getOne(email);
+        if (!user) return res.status(404).json({ err: "E-mail not found." });
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) return res.status(401).json({ err: "Credenciais invalid!" });
+
+        // Gera Access Token (curto)
+        const accessToken = jwt.sign({ id: user._id, email: user.email }, JWTSecret, { expiresIn: '15m' });
+
+        // Gera Refresh Token (longo)
+        const refreshToken = jwt.sign({ id: user._id, email: user.email }, JWTRefreshSecret, { expiresIn: '7d' });
+
+        // Define cookie com refresh token 
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return res.status(200).json({ accessToken });
     } catch (error) {
-        console.log(error)
-        res.sendStatus(500) // Internal Server Error
+        console.log(error);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
-export default { loginUser, JWTSecret}
+// Refresh Token - gera novo access token
+const refreshToken = (req, res) => {
+    const token = req.cookies.refreshToken;
+    if (!token) return res.status(401).json({ err: "Refresh token not found" });
+
+    jwt.verify(token, JWTRefreshSecret, (err, data) => {
+        if (err) return res.status(403).json({ err: "Refresh token invalid" });
+
+        const newAccessToken = jwt.sign({ id: data.id, email: data.email }, JWTSecret, { expiresIn: '15m' });
+        return res.json({ accessToken: newAccessToken });
+    });
+};
+
+// Perfil do usuário logado
+const me = async (req, res) => {
+    try {
+        const user = await User.findById(req.loggedUser.id);
+        if (!user) return res.status(404).json({ err: "User not Found" });
+        // Colocar as informações que devem ser retornadas
+        return res.json({
+            id: user._id,
+            email: user.email,
+        });
+    } catch (error) {
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+export default {
+    loginUser,
+    refreshToken,
+    me,
+    JWTSecret
+};
