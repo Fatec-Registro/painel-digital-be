@@ -1,6 +1,6 @@
 import express from "express";
 import panelController from "./panelController.js";
-// import Auth from "../../middleware/Auth.js"; // descomentar quando for implementar autenticação
+import Auth from "../../middleware/Auth.js";
 
 const panelRoutes = express.Router();
 
@@ -87,10 +87,7 @@ const panelRoutes = express.Router();
  *       500:
  *         description: Internal Server Error
  */
-panelRoutes.get(
-  "/panels",
-  /* Auth.Authorization, */ panelController.getAllPanels
-);
+panelRoutes.get("/panels", Auth.Authorization, panelController.getAllPanels);
 
 /**
  * @swagger
@@ -118,10 +115,7 @@ panelRoutes.get(
  *       500:
  *         description: Internal Server Error
  */
-panelRoutes.post(
-  "/panel",
-  /* Auth.Authorization, */ panelController.createPanel
-);
+panelRoutes.post("/panel", Auth.Authorization, panelController.createPanel);
 
 /**
  * @swagger
@@ -207,19 +201,10 @@ panelRoutes.post(
  *       500:
  *         description: Internal Server Error
  */
-panelRoutes.get(
-  "/panel/:id",
-  /* Auth.Authorization, */ panelController.getOnePanel
-);
+panelRoutes.get("/panel/:id", Auth.Authorization, panelController.getOnePanel);
 
-panelRoutes.delete(
-  "/panel/:id",
-  /* Auth.Authorization, */ panelController.deletePanel
-);
+panelRoutes.delete("/panel/:id", Auth.Authorization, panelController.deletePanel);
 
-panelRoutes.patch(
-  "/panel/:id",
-  /* Auth.Authorization, */ panelController.updatePanel
-);
+panelRoutes.patch("/panel/:id", Auth.Authorization, panelController.updatePanel);
 
 export default panelRoutes;
