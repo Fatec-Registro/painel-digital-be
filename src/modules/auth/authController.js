@@ -15,7 +15,7 @@ const loginUser = async (req, res) => {
         const user = await userService.getOne(email);
         if (!user) return res.status(404).json({ err: "E-mail not found." });
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.senha);
         if (!isPasswordValid) return res.status(401).json({ err: "Credential invalid!" });
 
         const accessToken = jwt.sign({ id: user._id, email: user.email }, JWTSecret, { expiresIn: '15m' });
