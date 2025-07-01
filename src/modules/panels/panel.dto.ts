@@ -21,3 +21,6 @@ const baseSchema = z.object({
 export const createPanelSchema = baseSchema;
 
 export const updatePanelSchema = baseSchema.partial();
+
+export type CreatePanelDTO = z.infer<typeof createPanelSchema>;
+export type UpdatePanelDTO = z.infer<typeof updatePanelSchema>;
