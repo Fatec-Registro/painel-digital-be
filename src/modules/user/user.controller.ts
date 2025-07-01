@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createUserSchema, updateUserSchema } from "./user.dto";
-import userService from "./user.service";
+import { createUserSchema, updateUserSchema } from "./user.dto.js";
+import userService from "./user.service.js";
 import mongoose from "mongoose";
 import { ZodError } from "zod";
 

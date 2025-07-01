@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
-import authController from "../modules/auth/auth.controller";
+import authController from "../modules/auth/auth.controller.js";
 
 // Estendendo a interface Request do Express
 declare global {

@@ -1,15 +1,18 @@
-import express from "express";
+import express, { Express } from "express";
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
 
+// Removendo as extensões .js dos imports
 import { swaggerUi, swaggerSpec } from './src/config/swagger.js';
-import exampleRoutes from "./src/modules/example/exampleRoutes.js";
-import userRoutes from "./src/modules/user/userRoutes.js";
-import panelRoutes from "./src/modules/panels/panelRoutes.js";
-import authRoutes from "./src/modules/auth/authRoutes.js";
+import exampleRoutes from "./src/modules/example/example.routes.js";
+import userRoutes from "./src/modules/user/user.routes.js";
+import panelRoutes from "./src/modules/panels/panel.routes.js";
+import authRoutes from "./src/modules/auth/auth.routes.js";
 
 dotenv.config();
-const app = express();
+
+// Tipando a variável app com o tipo Express importado
+const app: Express = express();
 
 // Middlewares
 app.use(express.urlencoded({ extended: false }));
@@ -20,6 +23,7 @@ app.use(cookieParser());
 // Rota da documentação
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Rotas dos módulos
 app.use("/", exampleRoutes);
 app.use("/", userRoutes);
 app.use("/", panelRoutes);

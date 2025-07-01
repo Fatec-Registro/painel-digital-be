@@ -23,18 +23,12 @@ const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
       },
     },
   },
-
-  security: [
-    {
-      bearerAuth: [],
-    }
-  ]
 };
 
 
 const options: swaggerJSDoc.Options = {
   swaggerDefinition,
-  apis: ['./src/modules/**/*.ts'], 
+  apis: ['./src/modules/**/*.@(ts|js)'], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);

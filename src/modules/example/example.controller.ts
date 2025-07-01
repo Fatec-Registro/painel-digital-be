@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import exampleService from "./example.service";
+import exampleService from "./example.service.js";
 import { ZodError } from "zod";
 import mongoose from 'mongoose';
 

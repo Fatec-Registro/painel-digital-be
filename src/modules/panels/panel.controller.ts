@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import panelService from "./panel.service";
-import { createPanelSchema } from "./panel.dto";
+import panelService from "./panel.service.js";
+import { createPanelSchema } from "./panel.dto.js";
 import mongoose from "mongoose";
 import { ZodError } from "zod";
 

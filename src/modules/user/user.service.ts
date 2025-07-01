@@ -1,5 +1,5 @@
-import { CreateUserDTO, UpdateUserDTO, createUserSchema, updateUserSchema } from './user.dto';
-import User, { IUser } from './user.model';
+import { CreateUserDTO, UpdateUserDTO, createUserSchema, updateUserSchema } from './user.dto.js';
+import User, { IUser } from './user.model.js';
 import { ZodError } from 'zod';
 
 class UserService {

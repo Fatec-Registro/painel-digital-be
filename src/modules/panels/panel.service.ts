@@ -1,6 +1,6 @@
 
-import Panel, { IPanel } from "./panel.model";
-import { CreatePanelDTO, UpdatePanelDTO, updatePanelSchema } from "./panel.dto";
+import Panel, { IPanel } from "./panel.model.js";
+import { CreatePanelDTO, UpdatePanelDTO, updatePanelSchema } from "./panel.dto.js";
 import { ZodError } from "zod";
 
 class PanelService {

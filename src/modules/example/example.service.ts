@@ -1,10 +1,10 @@
-import Example, {IExample }  from "./example.model"; 
+import Example, {IExample }  from "./example.model.js"; 
 import { 
     createExampleSchema, 
     updateExampleSchema,
     CreateExampleDTO, 
     UpdateExampleDTO  
-} from "./example.dto";
+} from "./example.dto.js";
 import { ZodError } from "zod";
 
 class ExampleService {
