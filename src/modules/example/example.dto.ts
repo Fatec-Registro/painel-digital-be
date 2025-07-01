@@ -17,7 +17,7 @@ export const createExampleSchema = z.object({
     dateOfBirth: z.coerce.date()
 });
 
-// Utilizado para a atualização validação de algum Doc.
+// Utilizado para a validação da atualização de algum Doc.
 export const updateExampleSchema = z.object({
     name: z.string().optional(),
     age: z.number().optional(),
@@ -25,3 +25,6 @@ export const updateExampleSchema = z.object({
     address: z.array(addressSchema).optional(),
     dateOfBirth: z.coerce.date().optional()
 });
+
+export type CreateExampleDTO = z.infer<typeof createExampleSchema>;
+export type UpdateExampleDTO = z.infer<typeof updateExampleSchema>;
