@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import userService from "../user/userService";
-import User from '../user/userModel';
+import userService from "../user/user.service";
+import User from '../user/user.model';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 
