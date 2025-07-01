@@ -5,113 +5,105 @@ import mongoose from 'mongoose';
 
 /**
  * @description Busca todos os exemplos.
- * @param {Request} req O objeto de requisição do Express.
- * @param {Response} res O objeto de resposta do Express.
  */
-const getAllExample = async (req: Request, res: Response): Promise<Response> => {
+const getAllExample = async (req: Request, res: Response): Promise<void> => {
     try {
         const examples = await exampleService.getAll();
-        return res.status(200).json({ examples }); // Cód. 200 (OK)
+        res.status(200).json({ examples });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" }); // Cód. 500
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
 /**
  * @description Cria um novo exemplo.
- * @param {Request} req O objeto de requisição do Express, com os dados no body.
- * @param {Response} res O objeto de resposta do Express.
  */
-const createExample = async (req: Request, res: Response): Promise<Response> => {
+const createExample = async (req: Request, res: Response): Promise<void> => {
     try {
-        // A validação e criação agora são responsabilidade do Service.
-        // O service já usa o DTO para validar.
         const example = await exampleService.create(req.body);
-        return res.status(201).json({ example }); // Cód. 201 (Created)
+        res.status(201).json({ example });
     } catch (error: unknown) {
         console.error(error);
         if (error instanceof ZodError) {
-            return res.status(400).json({ message: "Validation error", details: error.errors }); // Cód. 400
+            res.status(400).json({ message: "Validation error", details: error.errors });
+        } else if (error instanceof Error) {
+            res.status(400).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: "Internal Server Error" });
         }
-        if (error instanceof Error) {
-            return res.status(400).json({ message: error.message });
-        }
-        return res.status(500).json({ message: "Internal Server Error" }); // Cód. 500
     }
 };
 
 /**
  * @description Deleta um exemplo pelo ID.
- * @param {Request<{id: string}>} req O objeto de requisição do Express com o ID nos parâmetros.
- * @param {Response} res O objeto de resposta do Express.
  */
-const deleteExample = async (req: Request<{ id: string }>, res: Response): Promise<Response | void> => {
+const deleteExample = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "Invalid ID format" }); // Cód. 400
+            res.status(400).json({ message: "Invalid ID format" });
+            return;
         }
         await exampleService.delete(id);
-        return res.sendStatus(204); // Cód. 204 (No Content)
+        res.sendStatus(204);
     } catch (error: unknown) {
         console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" }); // Cód. 500
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
 /**
  * @description Atualiza um exemplo pelo ID.
- * @param {Request<{id: string}>} req O objeto de requisição do Express com o ID e dados.
- * @param {Response} res O objeto de resposta do Express.
  */
-const updateExample = async (req: Request<{ id: string }>, res: Response): Promise<Response> => {
+const updateExample = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "Invalid ID format" }); // Cód. 400
+            res.status(400).json({ message: "Invalid ID format" });
+            return;
         }
         
         const example = await exampleService.update(id, req.body);
 
         if (!example) {
-            return res.status(404).json({ message: "Example not found" });  // Cód. 404
+            res.status(404).json({ message: "Example not found" });
+        } else {
+            res.status(200).json({ example });
         }
-        return res.status(200).json({ example }); // Cód. 200 (OK)
     } catch (error: unknown) {
         console.error(error);
         if (error instanceof ZodError) {
-            return res.status(400).json({ message: "Validation error", details: error.errors }); // Cód. 400
+            res.status(400).json({ message: "Validation error", details: error.errors });
+        } else if (error instanceof Error) {
+            res.status(400).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: "Internal Server Error" });
         }
-        if (error instanceof Error) {
-            return res.status(400).json({ message: error.message });
-        }
-        return res.status(500).json({ message: "Internal Server Error" });  // Cód. 500
     }
 };
 
 /**
  * @description Busca um único exemplo pelo ID.
- * @param {Request<{id: string}>} req O objeto de requisição do Express com o ID nos parâmetros.
- * @param {Response} res O objeto de resposta do Express.
  */
-const getOneExample = async (req: Request<{ id: string }>, res: Response): Promise<Response> => {
+const getOneExample = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "Invalid ID format" }); // Cód. 400
+            res.status(400).json({ message: "Invalid ID format" });
+            return;
         }
 
         const example = await exampleService.getOne(id);
 
         if (!example) {
-            return res.status(404).json({ message: "Example not found" }); // Cód. 404
+            res.status(404).json({ message: "Example not found" });
+        } else {
+            res.status(200).json({ example });
         }
-        
-        return res.status(200).json({ example }); // Cód. 200 (OK)
     } catch (error: unknown) {
         console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" }); // Cód. 500
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 

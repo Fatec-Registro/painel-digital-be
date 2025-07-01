@@ -1,6 +1,6 @@
 import express from "express";
-import exampleController from "./example.controller"; // <--- Extensão .js removida
-//import Auth from "../../middleware/Auth";
+import exampleController from "./example.controller";
+import Auth from "../../middleware/Auth";
 
 const exampleRoutes = express.Router();
 

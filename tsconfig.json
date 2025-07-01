@@ -12,6 +12,6 @@
     "strict": true,                           // Habilita todas as opções de checagem de tipo estritas
     "skipLibCheck": true                      // Pula a verificação de tipos dos arquivos de declaração (.d.ts)
   },
-  "include": ["src/**/*"],                    // Inclui todos os arquivos dentro da pasta 'src' para compilação
+  "include": ["src/**/*", "src/middleware/.js"],                    // Inclui todos os arquivos dentro da pasta 'src' para compilação
   "exclude": ["node_modules"]                 // Exclui a pasta node_modules
 }
