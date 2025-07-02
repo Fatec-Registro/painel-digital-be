@@ -1,7 +1,27 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+import mongoose, { Schema, model, Document } from "mongoose";
 
-const panelSchema = new Schema(
+// Tipo literal para o status, garantindo que apenas valores válidos sejam usados
+type StatusPanel = "ativo" | "inativo" | "manutencao";
+
+// Interface que descreve a estrutura de um documento de Painel
+export interface IPanel extends Document {
+  nome: string;
+  localizacao: string;
+  descricao?: string; 
+  resolucao: string;
+  ip_maquina: string;
+  status: StatusPanel;
+  isSmartTV: boolean;
+  temCaboRede: boolean;
+  quantasEntradasHDMI: number;
+  marcaTV?: string; // Opcional
+  anunciosAtivos: mongoose.Schema.Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Definição do Schema do Mongoose, agora conectado à nossa interface IPanel
+const panelSchema: Schema<IPanel> = new Schema(
   {
     nome: {
       type: String,
@@ -46,15 +66,16 @@ const panelSchema = new Schema(
     anunciosAtivos: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Anuncio",
+        ref: "Anuncio", 
         default: [],
       },
     ],
   },
   {
-    timestamps: true,
+    timestamps: true, 
   }
 );
 
-const Panel = mongoose.model("Panel", panelSchema);
+const Panel = model<IPanel>("Panel", panelSchema);
+
 export default Panel;

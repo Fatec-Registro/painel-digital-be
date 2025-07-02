@@ -1,7 +1,7 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
-const swaggerDefinition = {
+const swaggerDefinition: swaggerJSDoc.SwaggerDefinition = {
   openapi: '3.0.0',
   info: {
     title: 'API do Painel Administrativo',
@@ -23,14 +23,12 @@ const swaggerDefinition = {
       },
     },
   },
-  security: {
-    bearerAuth: [],
-  }
 };
 
-const options = {
+
+const options: swaggerJSDoc.Options = {
   swaggerDefinition,
-  apis: ['./src/modules/**/*.js'],
+  apis: ['./src/modules/**/*.@(ts|js)'], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);
