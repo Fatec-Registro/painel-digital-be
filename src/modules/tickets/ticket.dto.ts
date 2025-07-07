@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Types } from 'mongoose';
-import { TicketStatus } from './tickets.model.js';
+import { TicketStatus } from './ticket.model.js';
 
 // Criamos um validador customizado para ObjectId do Mongoose
 const objectIdSchema = z.string().refine((val) => {

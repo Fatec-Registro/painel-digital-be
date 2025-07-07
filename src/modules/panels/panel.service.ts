@@ -1,4 +1,3 @@
-
 import Panel, { IPanel } from "./panel.model.js";
 import { CreatePanelDTO, UpdatePanelDTO, updatePanelSchema } from "./panel.dto.js";
 import { ZodError } from "zod";
