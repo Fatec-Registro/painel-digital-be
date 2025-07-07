@@ -5,7 +5,7 @@
   "description": "O backend deste projeto foi desenvolvido utilizando Arquitetura Modular e agora está em TypeScript.",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon --exec 'node --loader ts-node/esm' index.ts",
+    "dev": "nodemon --exec \"node --loader ts-node/esm\" index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "clean": "rm -rf dist"
