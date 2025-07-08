@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
+import './src/middleware/Auth.js';  // importa só pra rodar as declarações globais
 
 // Removendo as extensões .js dos imports
 import { swaggerUi, swaggerSpec } from './src/config/swagger.js';
