@@ -46,29 +46,33 @@ class UserRequestSerice {
      * @param data - Os dados para nova solicitação, conforme o CreateUserRequestDTO.
      * @returns Uma promessa que resolve para o novo documento IUserRequest criado.
      */
-    async create(data: CreateUserRequestDTO): Promise<IUserRequest> {
-        try {
-            const validatedData = createUserRequestSchema.parse(data);
-            
-            const existingUserRequest = await UserRequest.findOne({ email: validatedData.email });
-            if (existingUserRequest) {
-                // Lança um erro que pode ser tratado como conflito (409) no controller.
-                throw new Error("E-mail já cadastrado.");
-            }
+      async create(data: CreateUserRequestDTO): Promise<IUserRequest> {
+          try {
+              const validatedData = createUserRequestSchema.parse(data);
+              
+              // Busca uma solicitação existente com o mesmo email que NÃO esteja rejeitada
+              const existingUserRequest = await UserRequest.findOne({ 
+                  email: validatedData.email,
+                  status: { $ne: 'rejeitado' }
+              });
 
-            const newUserRequest = new UserRequest(validatedData);
-            await newUserRequest.save();
-            return newUserRequest;
-        } catch (error) {
-            if (error instanceof ZodError) {
-                console.error("Erro de validação Zod:", error.errors);
-                throw new Error(`Dados inválidos: ${error.errors.map(e => e.message).join(', ')}`);
-            }
-            console.error("Erro na criação de uma nova solicitação de criação de usuário:", error);
-            // Relança o erro para ser tratado pela camada superior (controller).
-            throw error; 
-        }
-    }
+              if (existingUserRequest) {
+                  throw new Error("Já existe uma solicitação pendente ou aprovada com este e-mail.");
+              }
+
+              const newUserRequest = new UserRequest(validatedData);
+              await newUserRequest.save();
+              return newUserRequest;
+          } catch (error) {
+              if (error instanceof ZodError) {
+                  console.error("Erro de validação Zod:", error.errors);
+                  throw new Error(`Dados inválidos: ${error.errors.map(e => e.message).join(', ')}`);
+              }
+              console.error("Erro na criação de uma nova solicitação de criação de usuário:", error);
+              throw error; 
+          }
+      }
+
 
     /**
      * Deleta uma solicitação pelo seu ID.
@@ -106,7 +110,6 @@ class UserRequestSerice {
         dataCriacao: new Date(),
         ativo: true
       });
-
 
         userRequest.status = 'aprovado';
         userRequest.analisadoPor = new mongoose.Types.ObjectId(approverId); // ← conversão correta

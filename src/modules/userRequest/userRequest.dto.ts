@@ -17,7 +17,7 @@ export const createUserRequestSchema = z.object({
   perfil: z.enum(perfisPermitidos, { errorMap: () => ({ message: 'Perfil inválido' }) }),
   departamento: z.enum(departamentosPermitidos, { errorMap: () => ({ message: 'Departamento inválido' }) }),
   criadoPor: z.string().regex(/^[a-f\d]{24}$/i, { message: 'ID do criador inválido' }),
-  analisadoPor:  z.string().regex(/^[a-f\d]{24}$/i, { message: 'ID do analisador inválido' }),
+  analisadoPor:  z.string().regex(/^[a-f\d]{24}$/i, { message: 'ID do analisador inválido' }).optional(),
 });
 
 export const updateUserRequestSchema = createUserRequestSchema.partial();

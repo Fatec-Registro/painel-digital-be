@@ -9,6 +9,7 @@ import exampleRoutes from "./src/modules/example/example.routes.js";
 import userRoutes from "./src/modules/user/user.routes.js";
 import panelRoutes from "./src/modules/panels/panel.routes.js";
 import authRoutes from "./src/modules/auth/auth.routes.js";
+import userRequestRoutes from "./src/modules/userRequest/userRequest.routes.js"
 
 dotenv.config();
 
@@ -29,5 +30,6 @@ app.use("/", exampleRoutes);
 app.use("/", userRoutes);
 app.use("/", panelRoutes);
 app.use("/", authRoutes);
+app.use("/", userRequestRoutes);
 
 export default app;

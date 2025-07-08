@@ -5,7 +5,7 @@ import { createUserRequestSchema, updateUserRequestSchema } from "./userRequest.
 import { ZodError } from "zod";
 
 /**
- * Busca todas as solicitações de usuário.
+ * @description Busca todas as solicitações de usuário.
  */
 const getAllRequests = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -18,7 +18,7 @@ const getAllRequests = async (req: Request, res: Response): Promise<void> => {
 };
 
 /**
- * Busca uma solicitação pelo ID.
+ * @description Busca uma solicitação pelo ID.
  */
 const getRequestById = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   const { id } = req.params;
@@ -41,10 +41,15 @@ const getRequestById = async (req: Request<{ id: string }>, res: Response): Prom
 };
 
 /**
- * Cria uma nova solicitação de usuário.
+ * @description Cria uma nova solicitação de usuário.
  */
 const createRequest = async (req: Request, res: Response): Promise<void> => {
-  const validationResult = createUserRequestSchema.safeParse(req.body);
+  // Injeta o ID do usuário autenticado no corpo da requisição
+  const validationResult = createUserRequestSchema.safeParse({
+    ...req.body,
+    criadoPor: req.loggedUser?.id, // <- injeta aqui
+  });
+
   if (!validationResult.success) {
     res.status(400).json({ message: "Erro de validação", details: validationResult.error.flatten() });
     return;
@@ -52,7 +57,8 @@ const createRequest = async (req: Request, res: Response): Promise<void> => {
 
   try {
     const newRequest = await userRequestService.create(validationResult.data);
-    // Não retorna a senhaTemporaria no response
+    
+    // Remove senha temporária do retorno
     const responseData = JSON.parse(JSON.stringify(newRequest));
     delete responseData.senhaTemporaria;
 
@@ -68,7 +74,7 @@ const createRequest = async (req: Request, res: Response): Promise<void> => {
 };
 
 /**
- * Deleta uma solicitação pelo ID.
+ * @description Deleta uma solicitação pelo ID.
  */
 const deleteRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   const { id } = req.params;
@@ -87,7 +93,7 @@ const deleteRequest = async (req: Request<{ id: string }>, res: Response): Promi
 };
 
 /**
- * Aprova uma solicitação pelo ID.
+ * @description Aprova uma solicitação pelo ID.
  */
 const approveRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   const { id } = req.params;
@@ -116,7 +122,7 @@ const approveRequest = async (req: Request<{ id: string }>, res: Response): Prom
 };
 
 /**
- * Rejeita uma solicitação pelo ID.
+ * @description Rejeita uma solicitação pelo ID.
  */
 const rejectRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   const { id } = req.params;
@@ -141,7 +147,7 @@ const rejectRequest = async (req: Request<{ id: string }>, res: Response): Promi
 };
 
 /**
- * Cancela uma solicitação feita pelo próprio usuário.
+ * @description Cancela uma solicitação feita pelo próprio usuário.
  */
 const cancelRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   const { id } = req.params;
@@ -165,12 +171,4 @@ const cancelRequest = async (req: Request<{ id: string }>, res: Response): Promi
   }
 };
 
-export default {
-  getAllRequests,
-  getRequestById,
-  createRequest,
-  deleteRequest,
-  approveRequest,
-  rejectRequest,
-  cancelRequest,
-};
+export default {  getAllRequests,  getRequestById,  createRequest,  deleteRequest,  approveRequest,  rejectRequest,  cancelRequest};
