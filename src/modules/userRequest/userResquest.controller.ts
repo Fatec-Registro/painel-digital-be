@@ -1,15 +1,28 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import userRequestService from "./userRequest.service.js";
-import { createUserRequestSchema, updateUserRequestSchema } from "./userRequest.dto.js";
+import {
+  createUserRequestSchema,
+  updateUserRequestSchema,
+} from "./userRequest.dto.js";
 import { ZodError } from "zod";
 
 /**
  * @description Busca todas as solicitações de usuário.
  */
 const getAllRequests = async (req: Request, res: Response): Promise<void> => {
+  const perfil = req.loggedUser?.perfil;
+  const departamento = req.loggedUser?.departamento;
   try {
-    const requests = await userRequestService.getAll();
+    let requests;
+    if (perfil === "suporte" && departamento === "DTI") {
+      // Suporte vê tudo
+      requests = await userRequestService.getAll();
+    } else {
+      // Outros só veem as solicitações do próprio departamento
+      requests = await userRequestService.getAllByDepartment(departamento!);
+    }
+
     res.status(200).json({ requests });
   } catch (error) {
     console.error(error);
@@ -20,7 +33,10 @@ const getAllRequests = async (req: Request, res: Response): Promise<void> => {
 /**
  * @description Busca uma solicitação pelo ID.
  */
-const getRequestById = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+const getRequestById = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(400).json({ message: "ID inválido" });
@@ -44,28 +60,50 @@ const getRequestById = async (req: Request<{ id: string }>, res: Response): Prom
  * @description Cria uma nova solicitação de usuário.
  */
 const createRequest = async (req: Request, res: Response): Promise<void> => {
-  // Injeta o ID do usuário autenticado no corpo da requisição
   const validationResult = createUserRequestSchema.safeParse({
     ...req.body,
-    criadoPor: req.loggedUser?.id, // <- injeta aqui
+    criadoPor: req.loggedUser?.id,
   });
 
   if (!validationResult.success) {
-    res.status(400).json({ message: "Erro de validação", details: validationResult.error.flatten() });
+    res.status(400).json({
+      message: "Erro de validação",
+      details: validationResult.error.flatten(),
+    });
+    return;
+  }
+
+  // Validação extra para departamentos/perfis
+  const userPerfil = req.loggedUser?.perfil;
+  const userDepartamento = req.loggedUser?.departamento;
+
+  const solicitacaoPerfil = validationResult.data.perfil;
+  const solicitacaoDepartamento = validationResult.data.departamento;
+
+  if (
+    (userPerfil !== "suporte" || userDepartamento !== "DTI") &&
+    solicitacaoDepartamento !== userDepartamento
+  ) {
+    res.status(403).json({
+      message:
+        "Você só pode solicitar usuários para seu próprio departamento, exceto DTI.",
+    });
     return;
   }
 
   try {
     const newRequest = await userRequestService.create(validationResult.data);
-    
-    // Remove senha temporária do retorno
+
     const responseData = JSON.parse(JSON.stringify(newRequest));
     delete responseData.senhaTemporaria;
 
     res.status(201).json(responseData);
   } catch (error: unknown) {
     console.error(error);
-    if (error instanceof Error && error.message.includes("E-mail já cadastrado")) {
+    if (
+      error instanceof Error &&
+      error.message.includes("E-mail já cadastrado")
+    ) {
       res.status(409).json({ message: error.message });
       return;
     }
@@ -74,42 +112,40 @@ const createRequest = async (req: Request, res: Response): Promise<void> => {
 };
 
 /**
- * @description Deleta uma solicitação pelo ID.
- */
-const deleteRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(400).json({ message: "ID inválido" });
-    return;
-  }
-
-  try {
-    await userRequestService.delete(id);
-    res.sendStatus(204);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Erro ao deletar solicitação" });
-  }
-};
-
-/**
  * @description Aprova uma solicitação pelo ID.
  */
-const approveRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+const approveRequest = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
-  const approverId = req.loggedUser?.id; // Presumindo que você tem o id do aprovador no req.user
+  const approverId = req.loggedUser?.id;
+  const approverPerfil = req.loggedUser?.perfil;
+  const approverDepartamento = req.loggedUser?.departamento;
 
   if (!approverId) {
     res.status(401).json({ message: "Usuário não autenticado" });
     return;
   }
-  if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(approverId)) {
+  if (
+    !mongoose.Types.ObjectId.isValid(id) ||
+    !mongoose.Types.ObjectId.isValid(approverId)
+  ) {
     res.status(400).json({ message: "ID inválido" });
+    return;
+  }
+  if (approverPerfil !== "suporte" || approverDepartamento !== "DTI") {
+    res.status(403).json({
+      message: "Você não tem permissão para aprovar ou rejeitar solicitações.",
+    });
     return;
   }
 
   try {
-    const approvedUser = await userRequestService.approveRequest(id, approverId);
+    const approvedUser = await userRequestService.approveRequest(
+      id,
+      approverId
+    );
     // Retorna o usuário criado, sem senha
     const userResponse = JSON.parse(JSON.stringify(approvedUser));
     delete userResponse.senha;
@@ -124,21 +160,38 @@ const approveRequest = async (req: Request<{ id: string }>, res: Response): Prom
 /**
  * @description Rejeita uma solicitação pelo ID.
  */
-const rejectRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+const rejectRequest = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
   const approverId = req.loggedUser?.id;
+  const approverPerfil = req.loggedUser?.perfil;
+  const approverDepartamento = req.loggedUser?.departamento;
 
   if (!approverId) {
     res.status(401).json({ message: "Usuário não autenticado" });
     return;
   }
-  if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(approverId)) {
+  if (approverPerfil !== "suporte" || approverDepartamento !== "DTI") {
+    res.status(403).json({
+      message: "Você não tem permissão para aprovar ou rejeitar solicitações.",
+    });
+    return;
+  }
+  if (
+    !mongoose.Types.ObjectId.isValid(id) ||
+    !mongoose.Types.ObjectId.isValid(approverId)
+  ) {
     res.status(400).json({ message: "ID inválido" });
     return;
   }
 
   try {
-    const rejectedRequest = await userRequestService.rejectRequest(id, approverId);
+    const rejectedRequest = await userRequestService.rejectRequest(
+      id,
+      approverId
+    );
     res.status(200).json(rejectedRequest);
   } catch (error) {
     console.error(error);
@@ -147,23 +200,50 @@ const rejectRequest = async (req: Request<{ id: string }>, res: Response): Promi
 };
 
 /**
- * @description Cancela uma solicitação feita pelo próprio usuário.
+ * @description Deleta uma solicitação feita.
  */
-const cancelRequest = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+const deleteRequest = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
   const { id } = req.params;
   const userId = req.loggedUser?.id;
+  const userDepartamento = req.loggedUser?.departamento;
 
   if (!userId) {
     res.status(401).json({ message: "Usuário não autenticado" });
     return;
   }
-  if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
+  if (
+    !mongoose.Types.ObjectId.isValid(id) ||
+    !mongoose.Types.ObjectId.isValid(userId)
+  ) {
     res.status(400).json({ message: "ID inválido" });
     return;
   }
 
   try {
-    await userRequestService.cancelRequest(id, userId);
+    const userRequest = await userRequestService.getOne(id);
+
+    if (!userRequest) {
+      res.status(404).json({ message: "Solicitação não encontrada" });
+      return;
+    }
+
+    // Se não for DTI, o departamento da requisição deve ser igual ao do usuário
+    if (
+      userDepartamento !== "DTI" &&
+      userRequest.departamento !== userDepartamento
+    ) {
+      res
+        .status(403)
+        .json({
+          message: "Você só pode cancelar solicitações do seu departamento.",
+        });
+      return;
+    }
+
+    await userRequestService.deleteRequest(id, userId);
     res.status(204).send();
   } catch (error) {
     console.error(error);
@@ -171,4 +251,11 @@ const cancelRequest = async (req: Request<{ id: string }>, res: Response): Promi
   }
 };
 
-export default {  getAllRequests,  getRequestById,  createRequest,  deleteRequest,  approveRequest,  rejectRequest,  cancelRequest};
+export default {
+  getAllRequests,
+  getRequestById,
+  createRequest,
+  approveRequest,
+  rejectRequest,
+  deleteRequest,
+};

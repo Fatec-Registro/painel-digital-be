@@ -10,6 +10,8 @@ declare global {
       loggedUser?: {
         id: string;
         email: string;
+        perfil: string;
+        departamento: string;
       };
     }
   }
@@ -43,7 +45,9 @@ const Authorization = (req: Request, res: Response, next: NextFunction): void =>
             req.token = token;
             req.loggedUser = {
                 id: decoded.id,
-                email: decoded.email
+                email: decoded.email,
+                perfil: decoded.perfil,
+                departamento: decoded.departamento
             };
             next(); // Passa para a próxima função no pipeline
         } else {

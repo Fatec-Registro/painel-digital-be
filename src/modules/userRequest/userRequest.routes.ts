@@ -128,29 +128,5 @@ userRequestRoutes.patch("/user-request/approve/:id", Auth.Authorization, userReq
  */
 userRequestRoutes.patch("/user-request/reject/:id", Auth.Authorization, userRequestController.rejectRequest);
 
-/**
- * @swagger
- * /user-request/cancel/{id}:
- *   patch:
- *     summary: Cancelar uma solicitação (pelo criador)
- *     tags: [UserRequests]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID da solicitação
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Solicitação cancelada com sucesso
- *       400:
- *         description: Solicitação não encontrada ou já processada
- *       500:
- *         description: Internal Server Error
- */
-userRequestRoutes.patch("/user-request/cancel/:id", Auth.Authorization, userRequestController.cancelRequest);
 
 export default userRequestRoutes;

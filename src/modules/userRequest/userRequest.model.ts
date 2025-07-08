@@ -72,13 +72,6 @@ const userRequestSchema: Schema<IUserRequest> = new Schema({
     }
 }, { timestamps: true });
 
-// Hook 'pre-save' para hashear da senha temporaria antes de salvar
-userRequestSchema.pre<IUserRequest>('save', async function (next) {
-    if (this.isModified('senhaTemporaria')) {
-        this.senhaTemporaria = await bcrypt.hash(this.senhaTemporaria, 10);
-    }
-    next();
-});
 
 const UserRequest = model<IUserRequest>("UserRequest", userRequestSchema);
 
