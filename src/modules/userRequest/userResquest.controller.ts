@@ -31,7 +31,7 @@ const getAllRequests = async (req: Request, res: Response): Promise<void> => {
 };
 
 /**
- * @description Busca uma solicitação pelo ID.
+ * @description Busca uma solicitação especifica pelo ID.
  */
 const getRequestById = async (
   req: Request<{ id: string }>,

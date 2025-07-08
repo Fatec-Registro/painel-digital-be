@@ -35,7 +35,6 @@ class UserRequestSerice {
   /**
    * Busca uma única solicitação de criação de usuário por ID.
    * @param id - O ID da solicitação.
-   * @returns Uma promessa que resolve para o documento IUserRequest, ou null se não encontrado.
    */
   async getOne(id: string): Promise<IUserRequest | null> {
     try {
