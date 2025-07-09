@@ -30,7 +30,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const payload = { id: user._id, email: user.email };
+        const payload = { id: user._id, email: user.email, perfil: user.perfil, departamento: user.departamento };
         const accessToken = jwt.sign(payload, JWTSecret, { expiresIn: '15m' });
         const refreshToken = jwt.sign(payload, JWTRefreshSecret, { expiresIn: '7d' });
 
@@ -99,6 +99,8 @@ const me = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             id: user._id,
             email: user.email,
+            departamento: user.departamento,
+            perfil: user.perfil
         });
     } catch (error: unknown) {
         res.status(500).json({ error: "Internal Server Error" });

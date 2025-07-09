@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
+import './src/middleware/Auth.js';  // importa só pra rodar as declarações globais
 
 // Importação dos modelos
 import './src/modules/user/user.model.js';
@@ -14,6 +15,7 @@ import userRoutes from "./src/modules/user/user.routes.js";
 import panelRoutes from "./src/modules/panels/panel.routes.js";
 import ticketRoutes from "./src/modules/tickets/ticket.routes.js";
 import authRoutes from "./src/modules/auth/auth.routes.js";
+import userRequestRoutes from "./src/modules/userRequest/userRequest.routes.js"
 
 dotenv.config();
 
@@ -34,5 +36,6 @@ app.use("/", userRoutes);
 app.use("/", panelRoutes);
 app.use("/", ticketRoutes);
 app.use("/", authRoutes);
+app.use("/", userRequestRoutes);
 
 export default app;
